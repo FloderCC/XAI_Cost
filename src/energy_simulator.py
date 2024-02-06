@@ -1,5 +1,5 @@
 # running device MIPS
-real_mips = 68900
+real_mips = 60000   # Our CPU regarding 7z:
 
 # simulated device specs
 # HP ProLiant ML110 G4, Intel Xeon 3075  / 4GB / 64GB (MIPS: 5320, Power: 93.7 - 135)
