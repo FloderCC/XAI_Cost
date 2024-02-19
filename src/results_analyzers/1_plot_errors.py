@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import matplotlib as mpl
 
 # Set default font size
-mpl.rcParams['font.size'] = 14
+mpl.rcParams['font.size'] = 16
 
 results_file_path = 'results/backup/results_by_dataset_model_xai.csv'
 
@@ -20,15 +20,16 @@ df.rename(columns={'XAI': 'XAI technique'}, inplace=True)
 
 errors = ['MCC']
 
+
 for error in errors:
-    plt.figure(figsize=(12, 4.8))
+    plt.figure(figsize=(8, 6))
 
     custom_palette = ["#bad4be", "#8abd92", "#67bf77", "#54a161", "#417d4b",  "#d49d9d", "#cc8181", "#c25555", "#a84848",  "#93bddb", "#65a7d6", "#5588ad", "#35698f"]
 
     ax = sns.barplot(x='Dataset', y=error, hue='ML model', data=df, ci=None, palette=custom_palette)  # ci=None disables error bars
 
     # Create a custom legend and center it
-    ax.legend(fontsize=12, loc='upper right', bbox_to_anchor=(1.15, 1))
+    ax.legend(fontsize=16, loc='upper right', bbox_to_anchor=(1.30, 1))
 
     ax.spines['right'].set_visible(False)
     ax.spines['top'].set_visible(False)
