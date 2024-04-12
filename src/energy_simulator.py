@@ -10,7 +10,6 @@ simulated_busy_energy = 135
 
 aux_constant = (simulated_busy_energy - simulated_idle_energy) / 100
 
-
 def simulate_energy_consumption(training_time, cpu_usage):
     """
     :param training_time: the code execution time

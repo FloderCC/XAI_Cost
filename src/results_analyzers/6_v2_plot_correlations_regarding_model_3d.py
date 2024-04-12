@@ -6,12 +6,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from matplotlib import cm
-from scipy.interpolate import griddata
+import seaborn as sns
 
 from src.results_analyzers.utils import divide_dataframe_regarding_mcc
 
-# Set default font size
-mpl.rcParams['font.size'] = 10
+
 
 
 def generate_correlation_matrices(json_file_path, mode):
@@ -42,6 +41,7 @@ def generate_correlation_matrices(json_file_path, mode):
             correlation_matrices[first_key][second_key] = correlation_matrix
 
     return correlation_matrices
+
 
 def get_correlation_level(value):
     if value > 0.75: return 'High Positive Correlation (p > 0.75)'
@@ -109,90 +109,92 @@ for result_name, result_dataframe in divide_dataframe_regarding_mcc(pd.read_csv(
 
                             dataset_values += [dataset]
                             models_values += [model]
-                            xai_values += [f'{col_name} {row_name}']
+                            xai_values += [f'{col_name} {row_name}'.replace(' ', ' - ')]
                             correlation_values += [cell_value]
 
-        xs = [models.index(v) for v in models_values]
-        ys = [XAI_pairs.index(v) for v in xai_values]
-        zs = correlation_values
-
-        print(f"\nAll values in case of {result_name} models")
-        for i in range(len(xs)):
-            print(f"{models_values[i]}, {xai_values[i]}, {dataset_values[i]}, {zs[i]}")
+        # xs = [models.index(v) for v in models_values]
+        # ys = [XAI_pairs.index(v) for v in xai_values]
+        # zs = correlation_values
 
 
-        # ////// transforming the data to avg and stv for the v2 \\\\\\\
-        from collections import defaultdict
+        # create a dataframe with xs, ys, and zs
+        df_p = pd.DataFrame({'Model': models_values, 'XAI pair': xai_values, 'Correlation': correlation_values})
 
-        data = defaultdict(list)
-        # Iterate over the data and collect z values for each (x, y) pair
-        for xi, yi, zi in zip(xs, ys, zs):
-            data[(xi, yi)].append(zi)
-        averages = {key: np.average(vals) for key, vals in data.items()}
-        std_dev = {key: np.std(vals) for key, vals in data.items()}
+        # Create a new plot
+        fig = plt.figure(figsize=(8, 5.6))
+        # Set default font size
+        mpl.rcParams['font.size'] = 16
 
-        # Separate the averaged values back into x, y, and z lists
-        xs = [xi for xi, _ in averages]
-        ys = [yi for _, yi in averages]
-        zs = [averages[(xi, yi)] for xi, yi in averages]
-        zs_std_p = [averages[(xi, yi)] + std_dev[(xi, yi)] for xi, yi in std_dev]
-        zs_std_n = [averages[(xi, yi)] - std_dev[(xi, yi)] for xi, yi in std_dev]
+        plt.style.use('tableau-colorblind10')
+        plt.rcParams['figure.autolayout'] = True
+        plt.rcParams['figure.figsize'] = (4, 4)
+        plt.rcParams['lines.linewidth'] = 2
 
-        print(f"\nAverages in case of {result_name} models")
-        for i in range(len(xs)):
-            print(f"{models[xs[i]]}, {XAI_pairs[ys[i]]}, {zs[i]} (std {zs_std_p[i] - zs[i]})")
-        # \\\\\\\ transforming the data to avg and stv for the v2 //////
+        colormap = ['#377eb8', '#ff7f00', '#4daf4a']
+        markers = ['o', '*', '.', 'x', '+', 's', 'd', 'h', 'v']
+        lines = ['-', ':', '--', '-.']
+
+        # rotate x-axis labels
+        plt.xticks(rotation=30)
+
+        #define e new color palette
+        # custom_palette = ["#859ce0", "#8585e0", "#9c85e0"]
+
+        barplot = sns.barplot(x='Model', y='Correlation', hue='XAI pair', errorbar='sd', data=df_p, capsize=.20)  # , palette=colormap
+
+        # for p in barplot.patches:
+        #     barplot.annotate(format(p.get_height(), '.3f'),
+        #                      (p.get_x() + p.get_width() / 2., p.get_height()),
+        #                      ha='center', va='center',
+        #                      xytext=(0, 0),
+        #                      textcoords='offset points')
+        # aa_std = df_p.groupby(['Model', 'XAI pair'])['Correlation'].std().reset_index()
+        # aa_avg = df_p.groupby(['Model', 'XAI pair'])['Correlation'].mean().reset_index()
+        # #order by correlation
+        # aa_avg = aa_avg.sort_values(by='Correlation', ascending=False)
+        #
+        # print(result_name)
+        # print('mean:')
+        # print(aa_avg)
+        # print('std')
+        # print(aa_std)
+        #
+        # print('Mean of the means')
+        # print(aa_avg['Correlation'].mean())
 
 
+        # plt.gca().set_ylim(-2, 2)
+        plt.yticks(np.arange(-1.2, 1.3, 0.4))
 
-        fig = plt.figure(figsize=(16, 6))
+        # set legend position by coordinates
+        plt.legend(loc='lower right', bbox_to_anchor=(0.85, 0))
 
-        ax = fig.add_subplot(111, projection='3d')
+        # set Y axis label
+        plt.ylabel('PCC')
 
-        # surface 1
-        X, Y = np.meshgrid(np.linspace(min(xs), max(xs), 100), np.linspace(min(ys), max(ys), 100))
-        Z = griddata((xs, ys), zs, (X, Y), method='linear')
-        surf = ax.plot_surface(X, Y, Z, cmap='Blues', linewidth=1, antialiased=False, alpha=0.9, vmin=-1, vmax=1)
+        # add horizontal line and label at y 0.3
+        plt.axhline(y=0.3, linestyle='--', color='#545353', linewidth=1.5)
+        plt.text(9.3 if result_name == 'lp' else 11.6, 0.22, 'Weak\nPositive', fontsize=14, ha='center')
+        plt.axhline(y=-0.3, linestyle='--', color='#545353', linewidth=1.5)
+        plt.text(9.3 if result_name == 'lp' else 11.6, - 0.38, 'Weak\nNegative', fontsize=14, ha='center')
 
-        # surface 2
-        Z2 = griddata((xs, ys), zs_std_p, (X, Y), method='linear')
-        surf2 = ax.plot_surface(X, Y, Z2, color='#d90d0d', linewidth=1, antialiased=False, alpha=0.3,  vmin=-1, vmax=1)
-        ax.text(-1.5 if result_name == "hp" else -1.3, 0, 0.48, "Std Dev", (0.08, 0.08, 1))
-        ax.plot([-0.25, 0.03], [-0.1, 0.08], [1.13, 1], color='k', linewidth=0.8)
-        ax.plot([-0.3, -0.08], [-0.1, 0.08], [0.64, 0.54], color='k', linewidth=0.8)
+        # # add horizontal line and label at y 0.8
+        # plt.axhline(y=0.8, linestyle='--', color='#545353', linewidth=1.5)
+        # plt.text(9.1, 0.70, 'Moderate\nPositive', fontsize=10, ha='center')
+        # plt.axhline(y=-0.8, linestyle='--', color='#545353', linewidth=1.5)
+        # plt.text(9.1, - 0.86, 'Moderate\nNegative', fontsize=10, ha='center')
+        #
+        # # add horizontal line and label at y 1.0
+        # plt.axhline(y=1.0, linestyle='--', color='#545353', linewidth=1.5)
+        # plt.text(9.1, 0.94, 'Strong\nPositive', fontsize=10, ha='center')
+        # plt.axhline(y=-1.0, linestyle='--', color='#545353', linewidth=1.5)
+        # plt.text(9.1, - 1.1, 'Strong\nNegative', fontsize=10, ha='center')
 
-        # surface 3
-        Z2 = griddata((xs, ys), zs_std_n, (X, Y), method='linear')
-        surf3 = ax.plot_surface(X, Y, Z2, color='#d90d0d', linewidth=1, antialiased=False, alpha=0.4,  vmin=-1, vmax=1)
-
-        ax.set_xlim(min(xs), max(xs))
-        ax.set_ylim(min(ys), max(ys))
-        ax.set_zlim(-1, 1)
-
-        # Improve layout by adjusting the view
-        # ax.view_init(elev=20, azim=30)
-
-        # ax.set_position([0.13, 0.1, 0.6, 0.8])
-        ax.tick_params(axis='x', which='major', labelsize=8, pad=8)
-        ax.tick_params(axis='y', which='major', pad=5)
-        ax.tick_params(axis='z', which='major', pad=10)
-        ax.xaxis.labelpad = 10
-        ax.zaxis.labelpad = 18
-        ax.yaxis.labelpad = 10
-
-        ax.set_xticks(range(len(models)))
-        ax.set_xticklabels(models)
-        ax.set_yticks(range(len(XAI_pairs)))
-        ax.set_yticklabels(XAI_pairs)
-
-        ax.set_xlabel('Model')
-        ax.set_ylabel('XAI Pair')
-        ax.set_zlabel('Correlation')
 
 
         out_file_name = f"correlations_regarding_model_3d_{result_name}"
 
-        plt.savefig(f"plots/png/{out_file_name}.png", format='png', bbox_inches='tight')
+        plt.savefig(f"plots/png/{out_file_name}.png", format='png', bbox_inches='tight')  # , transparent=True
         # Save the plot to PDF
         plt.savefig(f"plots/pdf/{out_file_name}.pdf", format='pdf', bbox_inches='tight')
         # plt.show()

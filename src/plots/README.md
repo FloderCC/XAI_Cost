@@ -61,10 +61,10 @@
 ## Correlation between features relevance
 
 ### Correlation between features relevance regarding datasets with high-performance models
-![Correlation between features relevance regarding datasets with high-performance models](png/correlations_regarding_datasets_3d_hp.png)
+![Correlation between features relevance regarding datasets with high-performance models](png/correlations_regarding_dataset_3d_hp.png)
 
 ### Correlation between features relevance regarding datasets with low-performance models
-![Correlation between features relevance regarding datasets with low-performance models](png/correlations_regarding_datasets_3d_lp.png)
+![Correlation between features relevance regarding datasets with low-performance models](png/correlations_regarding_dataset_3d_lp.png)
 
 ### Correlation between features relevance regarding models with high-performance models
 ![Correlation between features relevance regarding models with high-performance models](png/correlations_regarding_model_3d_hp.png)
