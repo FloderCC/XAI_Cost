@@ -1,3 +1,7 @@
+## Model performance figure
+
+![Model performance](png/error_MCC.png)
+
 ## Execution time figures
 
 ### Execution times of XAI techniques with QoS-QoE dataset and high-performance models

@@ -1,6 +1,10 @@
 # XAI Cost
 
-### Repository of the work entitled From Black Box to Transparency: The Hidden Costs of XAI in NGN
+[![DOI](https://zenodo.org/badge/739455853.svg)](https://zenodo.org/doi/10.5281/zenodo.10968681)
+
+
+
+### Repository of the work entitled From Black Box to Transparency: Consistency and Cost within XAI
 
 ## Structure
 
