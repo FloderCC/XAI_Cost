@@ -35,7 +35,7 @@ def generate_correlation_matrices(json_file_path, mode):
             df.rename(columns={'Permutation Importance': 'PI'}, inplace=True)
 
             # Calculate the correlation matrix
-            correlation_matrix = df.corr()
+            correlation_matrix = df.corr(method='spearman')
 
             # Store the correlation matrix in the result dictionary
             correlation_matrices[first_key][second_key] = correlation_matrix
@@ -150,7 +150,7 @@ for result_name, result_dataframe in divide_dataframe_regarding_mcc(pd.read_csv(
         plt.legend(loc='lower right', bbox_to_anchor=(0.85, 0))
 
         # set Y axis label
-        plt.ylabel('PCC')
+        plt.ylabel('SCC')
 
         # add horizontal line and label at y 0.3
         plt.axhline(y=0.3, linestyle='--', color='#545353', linewidth=1.5)
