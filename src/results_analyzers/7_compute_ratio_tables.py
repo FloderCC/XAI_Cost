@@ -2,7 +2,7 @@ import pandas as pd
 
 from src.results_analyzers.utils import divide_dataframe_regarding_mcc
 
-results_file_path = 'results/backup/results_by_dataset_model_xai.csv'
+results_file_path = 'results/results_by_dataset_model_xai.csv'
 
 df = pd.read_csv(results_file_path)
 
@@ -18,7 +18,7 @@ df.rename(columns={'XAI': 'XAI technique'}, inplace=True)
 df.rename(columns={'TE Energy (J)': 'Energy (J)'}, inplace=True)
 
 
-datasets = ['QoS-QoE', 'UNAC', '5G Slicing']
+datasets = order = ['KPI-KQI', 'UNAC', 'NSR', 'QoS-QoE', '5G Slicing']
 costs = ['Energy (J)']
 
 df['Ratio'] = df['XAI Energy (J)'] / df['Inference Energy (J)']
@@ -31,7 +31,4 @@ for dataset in datasets:
 
         print(f"\nDataset: {dataset}\n")
 
-        # print(df_d.to_csv(index=False))
-        # print(df_d.to_markdown(index=False))
-        if dataset == 'QoS-QoE':
-            print(df_d.to_latex(index=False))
+        print(df_d.to_markdown(index=False, floatfmt=".2f"))

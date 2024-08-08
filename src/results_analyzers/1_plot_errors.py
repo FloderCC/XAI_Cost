@@ -6,7 +6,7 @@ import matplotlib as mpl
 # Set default font size
 mpl.rcParams['font.size'] = 16
 
-results_file_path = 'results/backup/results_by_dataset_model_xai.csv'
+results_file_path = 'results/results_by_dataset_model_xai.csv'
 
 df = pd.read_csv(results_file_path)
 
@@ -18,18 +18,27 @@ df['XAI'] = df['XAI'].replace('Permutation Importance', 'PI')
 df.rename(columns={'Model': 'ML model'}, inplace=True)
 df.rename(columns={'XAI': 'XAI technique'}, inplace=True)
 
-errors = ['MCC']
-# custom_palette = ["#bad4be", "#8abd92", "#67bf77", "#54a161", "#417d4b", "#d49d9d", "#cc8181", "#c25555", "#a84848",
-#                   "#93bddb", "#65a7d6", "#5588ad", "#35698f"]
+# setting order
+order = ['KPI-KQI', 'UNAC', 'NSR', 'QoS-QoE', '5G Slicing']
+df['Dataset'] = pd.Categorical(df['Dataset'], categories=order, ordered=True)
 
-# tableau_colorblind10 = ['#006BA4', '#FF800E', '#ABABAB', '#595959', '#5F9ED1', '#C85200', '#898989', '#A2C8EC', '#FFBC79', '#CFCFCF']
-tableau_colorblind10_plus_3 = ['#006BA4', '#FF800E', '#ABABAB', '#595959', '#006400', '#5F9ED1', '#C85200', '#898989', '#598759', '#A2C8EC', '#FFBC79', '#CFCFCF', '#8FBC8F']
+order = ['DT', 'KNN', 'MLP', 'SGD', 'GNB', 'RF', 'VC', 'BC', 'ABC', 'DNN1v0', 'DNN1v1', 'DNN2v0', 'DNN2v1']
+df['ML model'] = pd.Categorical(df['ML model'], order, ordered=True)
+
+df = df.sort_values(by=['Dataset', 'ML model'])
+
+
+errors = ['MCC']
+
 for error in errors:
     plt.figure(figsize=(8, 6))
 
-    ax = sns.barplot(x='Dataset', y=error, hue='ML model', data=df, errorbar=None, palette=tableau_colorblind10_plus_3)  # ci=None disables error bars
+    ax = sns.barplot(x='Dataset', y=error, hue='ML model', data=df, errorbar=None, palette='tab20')  # ci=None disables error bars
 
-    # Create a custom legend and center it
+    # add horizontal line 0.8 MCC as a cutoff (dashed)
+    plt.axhline(y=0.8, color='#545353', linewidth=1.0, linestyle='--')
+
+    # Create the legend and center it
     ax.legend(fontsize=16, loc='upper right', bbox_to_anchor=(1.30, 1))
 
     ax.spines['right'].set_visible(False)

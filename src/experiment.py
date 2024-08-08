@@ -37,6 +37,8 @@ keras.utils.disable_interactive_logging()
 
 # format: [name, [features to be removed], output]]
 dataset_setup_list = [
+    ['KPI-KQI', [], 'Service'],
+    ['NSR', [], 'slice Type'],
     ['QOE_prediction_ICC2018', ['RebufferingRatio', 'AvgVideoBitRate', 'AvgVideoQualityVariation'], 'StallLabel'],
     ['UNAC', ['file'], 'output'],
     ['5G_Slicing', [], 'Slice Type (Output)']
@@ -72,7 +74,7 @@ xai_algorithms = {
 
 # \\\ Setup end ///
 
-results_header = ['Dataset', 'Model', 'TR TIME', 'TR CPU%', 'TR Energy (J)', 'Accuracy', 'Precision', 'Recall', 'F1 Score', 'MCC', 'TE TIME', 'TE CPU%', 'TE Energy (J)', 'XAI', 'XAI TR TIME', 'XAI TR CPU%', ' XAI TR Energy (J)', 'XAI TE TIME', 'XAI TE CPU%', ' XAI TE Energy (J)']
+results_header = ['Dataset', 'Model', 'TR TIME', 'TR CPU%', 'TR Energy (J)', 'Accuracy', 'Precision', 'Recall', 'F1 Score', 'MCC', 'TE TIME', 'TE CPU%', 'TE Energy (J)', 'XAI', 'XAI TR TIME', 'XAI TR CPU%', 'XAI TR Energy (J)', 'XAI TE TIME', 'XAI TE CPU%', 'XAI TE Energy (J)']
 results = []
 
 # aux variable for saving the features weights
@@ -88,7 +90,7 @@ for dataset_setup in dataset_setup_list:
 
     # loading the dataset
     dataset_folder = f"./datasets/{dataset_name}"
-    df = pd.read_csv(f"{dataset_folder}/{os.listdir(dataset_folder)[0]}")
+    df = pd.read_csv(f"{dataset_folder}/{[file for file in os.listdir(dataset_folder) if file.endswith('.csv')][0]}")
 
     print(f"Started execution with dataset {dataset_name} {df.shape}")
 

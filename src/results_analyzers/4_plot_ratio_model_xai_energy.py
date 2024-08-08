@@ -8,7 +8,7 @@ from src.results_analyzers.utils import divide_dataframe_regarding_mcc
 # Set default font size
 mpl.rcParams['font.size'] = 14
 
-results_file_path = 'results/backup/results_by_dataset_model_xai.csv'
+results_file_path = 'results/results_by_dataset_model_xai.csv'
 
 df = pd.read_csv(results_file_path)
 
@@ -23,7 +23,7 @@ df.rename(columns={'Model': 'ML model'}, inplace=True)
 df.rename(columns={'XAI': 'XAI technique'}, inplace=True)
 
 
-datasets = ['QoS-QoE', 'UNAC', '5G Slicing']
+datasets = order = ['KPI-KQI', 'UNAC', 'NSR', 'QoS-QoE', '5G Slicing']
 costs = ['Energy (J)']
 
 df['Energy (J)'] /= df['TE Energy (J)']
@@ -44,7 +44,7 @@ for result_name, result_dataframe in dataset_divisions.items():
             df_d = result_dataframe[result_dataframe['Dataset'] == dataset]
 
             plt.figure(figsize=(6.5, 4.5))
-            sns.barplot(x=cost, y='ML model', hue='XAI technique', data=df_d, orient='h', palette='deep')  # ci=None disables error bars
+            sns.barplot(x=cost, y='ML model', hue='XAI technique', data=df_d, orient='h', palette='tab20')  # ci=None disables error bars
 
             plt.gca().set_xlim(0, max_costs[dataset][cost])
 
